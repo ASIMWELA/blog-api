@@ -5,7 +5,7 @@ import com.personal.website.enumconstants.ERole;
 
 import java.util.List;
 
-public class CheckRole {
+public class CheckUserRole {
     public static boolean isAdmin(List<RoleEntinty> roles) {
         boolean flag = false;
         for (RoleEntinty role : roles) {
@@ -14,7 +14,7 @@ public class CheckRole {
                 break;
             }
         }
-        return roles.size()>1 && flag;
+        return flag;
     }
     public static boolean isSubscriber(List<RoleEntinty> roles)
     {

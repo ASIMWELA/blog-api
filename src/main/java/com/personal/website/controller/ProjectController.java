@@ -2,7 +2,7 @@ package com.personal.website.controller;
 
 import com.personal.website.assembler.ProjectAssembler;
 import com.personal.website.dto.ProjectDto;
-import com.personal.website.entity.ProjectDetailsEntity;
+import com.personal.website.entity.ProjectEntity;
 import com.personal.website.exception.EntityNotFoundException;
 import com.personal.website.payload.ApiResponse;
 import com.personal.website.repository.ProjectDetailsRepository;
@@ -39,7 +39,7 @@ public class ProjectController {
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<CollectionModel<ProjectDto>> getAllProjects() {
-        List<ProjectDetailsEntity> projects = projectDetailsRepository.findAll();
+        List<ProjectEntity> projects = projectDetailsRepository.findAll();
 
         return new ResponseEntity<>(projectAssembler.toCollectionModel(projects), HttpStatus.OK);
 
@@ -54,7 +54,7 @@ public class ProjectController {
                     )
     public ProjectDto getProject(@PathVariable("projectName") String projectName) {
 
-           ProjectDetailsEntity entity = projectDetailsRepository.findByName(projectName).orElseThrow(() -> new EntityNotFoundException("NO UserDto with id " + projectName));
+           ProjectEntity entity = projectDetailsRepository.findByName(projectName).orElseThrow(() -> new EntityNotFoundException("NO UserDto with id " + projectName));
 
            ProjectDto model = ProjectDto.build(entity);
            model.add(linkTo(methodOn(ProjectController.class)
@@ -69,10 +69,10 @@ public class ProjectController {
             MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('ADMIN')")
-    public  ResponseEntity<ApiResponse> addProject(@NotNull @RequestBody ProjectDetailsEntity projectDetailsEntity) throws InterruptedException
+    public  ResponseEntity<ApiResponse> addProject(@NotNull @RequestBody ProjectEntity projectEntity) throws InterruptedException
     {
 
-        projectDetailsService.saveProject(projectDetailsEntity);
+        projectDetailsService.saveProject(projectEntity);
 
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "project added successfully" ),HttpStatus.CREATED);
 
@@ -84,10 +84,10 @@ public class ProjectController {
             MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('ADMIN')")
-    public  ResponseEntity<ApiResponse> editProjectEntity(@PathVariable("projectName") String projectName, @NotBlank @RequestBody ProjectDetailsEntity projectDetailsEntity) throws InterruptedException
+    public  ResponseEntity<ApiResponse> editProjectEntity(@PathVariable("projectName") String projectName, @NotBlank @RequestBody ProjectEntity projectEntity) throws InterruptedException
     {
 
-        projectDetailsService.editProject(projectName,projectDetailsEntity);
+        projectDetailsService.editProject(projectName, projectEntity);
 
         return new ResponseEntity<ApiResponse>(new ApiResponse(true,"project updated successfully" ),HttpStatus.OK);
 
@@ -101,7 +101,7 @@ public class ProjectController {
     @PreAuthorize("hasRole('ADMIN')")
     public  ResponseEntity<ApiResponse> deleteProject(@PathVariable("projectName") String projectName) throws InterruptedException
     {
-        ProjectDetailsEntity entity = projectDetailsRepository.findByName((projectName)).orElseThrow(()->new EntityNotFoundException("No project found with name "+ projectName));
+        ProjectEntity entity = projectDetailsRepository.findByName((projectName)).orElseThrow(()->new EntityNotFoundException("No project found with name "+ projectName));
 
         projectDetailsRepository.delete(entity);
 

@@ -1,6 +1,6 @@
 package com.personal.website.service;
 
-import com.personal.website.entity.ProjectDetailsEntity;
+import com.personal.website.entity.ProjectEntity;
 import com.personal.website.event.ProjectSavedEvent;
 import com.personal.website.exception.EntityAlreadyExistException;
 import com.personal.website.exception.EntityNotFoundException;
@@ -8,7 +8,6 @@ import com.personal.website.repository.ProjectDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class ProjectDetailsService
@@ -19,17 +18,17 @@ public class ProjectDetailsService
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    public ProjectDetailsEntity saveProject(ProjectDetailsEntity projectDetailsEntity)
+    public ProjectEntity saveProject(ProjectEntity projectEntity)
     {
-        if(projectDetailsRepository.existsByName(projectDetailsEntity.getName()))
+        if(projectDetailsRepository.existsByName(projectEntity.getName()))
             throw new EntityAlreadyExistException("ProjectDto already added");
 
-        ProjectDetailsEntity project = projectDetailsEntity.builder()
-                                                            .name(projectDetailsEntity.getName())
-                                                            .description(projectDetailsEntity.getDescription())
-                                                            .role(projectDetailsEntity.getRole())
-                                                            .locationLink(projectDetailsEntity.getLocationLink())
-                                                            .collaborators(projectDetailsEntity.getCollaborators())
+        ProjectEntity project = projectEntity.builder()
+                                                            .name(projectEntity.getName())
+                                                            .description(projectEntity.getDescription())
+                                                            .role(projectEntity.getRole())
+                                                            .locationLink(projectEntity.getLocationLink())
+                                                            .collaborators(projectEntity.getCollaborators())
                                                             .build();
 
         projectDetailsRepository.save(project);
@@ -38,16 +37,16 @@ public class ProjectDetailsService
 
         return project;
     }
-    public void editProject(String projectName, ProjectDetailsEntity projectDetailsEntity)
+    public void editProject(String projectName, ProjectEntity projectEntity)
     {
-        ProjectDetailsEntity project =projectDetailsRepository.findByName(projectName).orElseThrow(()->new EntityNotFoundException("No project found with name " + projectDetailsEntity.getName()));
+        ProjectEntity project =projectDetailsRepository.findByName(projectName).orElseThrow(()->new EntityNotFoundException("No project found with name " + projectEntity.getName()));
 
 //       projectDetailsRepository.updateUpdateProject(
-//                        projectDetailsEntity.getName(),
-//                        projectDetailsEntity.getDescription(),
-//                        projectDetailsEntity.getRole(),
-//                        projectDetailsEntity.getCollaborators(),
-//                        projectDetailsEntity.getLocationLink(),
+//                        projectEntity.getName(),
+//                        projectEntity.getDescription(),
+//                        projectEntity.getRole(),
+//                        projectEntity.getCollaborators(),
+//                        projectEntity.getLocationLink(),
 //                        project.getName()
 
        // );

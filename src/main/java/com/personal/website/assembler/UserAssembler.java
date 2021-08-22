@@ -4,7 +4,7 @@ import com.personal.website.controller.ResourceController;
 import com.personal.website.controller.UserController;
 import com.personal.website.dto.UserDto;
 import com.personal.website.entity.UserEntity;
-import com.personal.website.utils.CheckRole;
+import com.personal.website.utils.CheckUserRole;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class UserAssembler implements RepresentationModelAssembler<UserEntity, U
     @Override
     public UserDto toModel(UserEntity entity) {
         UserDto model = null;
-        if (CheckRole.isAdmin(entity.getRoles())) {
+        if (CheckUserRole.isAdmin(entity.getRoles())) {
             model = UserDto.builder()
                     .email(entity.getEmail())
                     .firstName(entity.getFirstName())

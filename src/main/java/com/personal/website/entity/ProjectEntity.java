@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
-public class ProjectDetailsEntity extends BaseEntity
+public class ProjectEntity extends BaseEntity
 {
     @Column(name="name", unique = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -1,21 +1,21 @@
 package com.personal.website.event;
 
-import com.personal.website.entity.ProjectDetailsEntity;
+import com.personal.website.entity.ProjectEntity;
 import org.springframework.context.ApplicationEvent;
 
 public class ProjectSavedEvent extends ApplicationEvent
 {
-    private ProjectDetailsEntity projectDetailsEntity;
+    private ProjectEntity projectEntity;
 
-    public ProjectSavedEvent( ProjectDetailsEntity projectDetailsEntity)
+    public ProjectSavedEvent( ProjectEntity projectEntity)
     {
-        super(projectDetailsEntity);
-        this.projectDetailsEntity = projectDetailsEntity;
+        super(projectEntity);
+        this.projectEntity = projectEntity;
     }
 
-    public ProjectDetailsEntity getProjectDetailsEntity()
+    public ProjectEntity getProjectDetailsEntity()
     {
-        return projectDetailsEntity;
+        return projectEntity;
     }
 
 }

@@ -1,8 +1,8 @@
 package com.personal.website.service;
 
-import com.personal.website.entity.ProjectDetailsEntity;
+import com.personal.website.entity.ProjectEntity;
 import com.personal.website.entity.UserEntity;
-import com.personal.website.utils.CheckRole;
+import com.personal.website.utils.CheckUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -44,16 +44,16 @@ public class SendEmail
     }
 
     @Async
-    public void sendProjectAddedEmail(List<UserEntity> subscriberEntity, ProjectDetailsEntity projectDetailsEntity) throws MailException, InterruptedException
+    public void sendProjectAddedEmail(List<UserEntity> subscriberEntity, ProjectEntity projectEntity) throws MailException, InterruptedException
     {
 
         //construct project details
-        String projectDetails = "\nProjectDto Details\nName :"+projectDetailsEntity.getName()+"\nDetails: "+projectDetailsEntity.getDescription()+
-                                "\nLocation link: "+projectDetailsEntity.getLocationLink();
+        String projectDetails = "\nProjectDto Details\nName :"+ projectEntity.getName()+"\nDetails: "+ projectEntity.getDescription()+
+                                "\nLocation link: "+ projectEntity.getLocationLink();
 
         //send only to subscribers since they only have a single role as user
         subscriberEntity.forEach(subscriber->{
-                if(!(CheckRole.isAdmin(subscriber.getRoles())))
+                if(!(CheckUserRole.isAdmin(subscriber.getRoles())))
                 {
                     SimpleMailMessage mail = new SimpleMailMessage();
                     mail.setTo(subscriber.getEmail());

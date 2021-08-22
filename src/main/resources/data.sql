@@ -5,7 +5,6 @@ INSERT INTO users_table(uuid, first_name, last_name, user_name, email, password,
 INSERT INTO experience_table(uuid,exp_name, began_on,years,months,user_id) VALUES('fgvdhprtqudf','Java','2015-10-15',6,12,1),('fgvdhprbqudf','Javascript','2014-10-15',7,12,1),('fgndhprtqudf','c++','2017-10-23',4,16,1),('fgvshprtqudf','php','2018-10-15',3,12,1),('lgvdhprtqudf','python','2015-10-15',6,24,1);
 
 INSERT INTO user_roles_table(user_id, role_id) VALUES(1,2);
-INSERT INTO user_roles_table(user_id, role_id) VALUES(1,1);
 INSERT INTO user_roles_table(user_id, role_id) VALUES(2,1);
 
 INSERT INTO projects_table(uuid,description,location_link,name,role)VALUES('qwertyuiopdf','INTRODUCTION TO JAVA','www.learnjava.com','Java','lead developer'),('qwegtyuiopdf','MOBILE APPLICATION DEVELOPEMNT','www.learnANDROID.com','android','lead developer'),('qwertyuiopgf','INTRODUCTION TO django','www.learnpython.com','pythno','lead developer');

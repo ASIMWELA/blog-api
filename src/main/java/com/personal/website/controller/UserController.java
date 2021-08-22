@@ -3,29 +3,28 @@ package com.personal.website.controller;
 import com.google.common.collect.Lists;
 import com.personal.website.assembler.ResourceAssembler;
 import com.personal.website.assembler.UserAssembler;
-import com.personal.website.dto.ContactInfoDto;
-import com.personal.website.dto.UserDto;
+import com.personal.website.dto.*;
 import com.personal.website.entity.*;
 import com.personal.website.exception.EntityNotFoundException;
 import com.personal.website.exception.OperationNotAllowedException;
-import com.personal.website.dto.ExperienceDto;
 import com.personal.website.payload.*;
 import com.personal.website.repository.*;
 import com.personal.website.service.ChatMessageService;
 import com.personal.website.service.UserService;
 import com.personal.website.utils.AppConstants;
-import com.personal.website.utils.CheckRole;
+import com.personal.website.utils.CheckUserRole;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,13 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -89,15 +86,15 @@ public class UserController {
     @RequestMapping(
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<PagedResponse> getAllUsers(@PositiveOrZero(message = "page number cannot be negative") @RequestParam(defaultValue = "0") Integer pageNo, @Positive @RequestParam(defaultValue = "20") Integer pageSize) {
-        return userService.getAllUsers(pageNo, pageSize);
+    public ResponseEntity<PagedModel<UserDto>> getAllUsers(@PositiveOrZero(message = "page number cannot be negative") @RequestParam(defaultValue = "0") Integer page,@PositiveOrZero(message = "page number cannot be negative") @RequestParam(defaultValue = "20") Integer size) {
+        return userService.getAllUsers(page, size);
     }
 
     @RequestMapping(
-            value = "/{userUuid}/experience",
+            value = "/{userUuid}/experience-details",
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<CollectionModel<ExperienceDto>> getUserExperience(@PathVariable String userUuid) {
+    public ResponseEntity<CollectionModel<?>> getUserExperience(@PathVariable String userUuid) {
         return userService.getUserExperience(userUuid);
     }
 
@@ -526,7 +523,7 @@ public class UserController {
         mail.setText(emailMessage.getContent());
 
         javaMailSender.send(mail);
-        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Email sent successfully"), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, "Email sent successfully"), HttpStatus.OK);
     }
 
     @RequestMapping(
@@ -542,7 +539,7 @@ public class UserController {
         UserEntity user = userRepository.findByUserName(userName).orElseThrow(() ->
                 new EntityNotFoundException("No user with id " + userName)
         );
-        if (!CheckRole.isAdmin(user.getRoles())) {
+        if (!CheckUserRole.isAdmin(user.getRoles())) {
             throw new OperationNotAllowedException("UserDto should only be an admin");
         }
         String fileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
@@ -576,9 +573,23 @@ public class UserController {
     }
 
     @GetMapping("/{userUuid}/contact-info")
-    public ResponseEntity<ContactInfoDto> getUserContactInfo(@PathVariable String userUuid) {
+    public ResponseEntity<ContactInfoDto> getUserContactInfo(@NonNull @PathVariable String userUuid) {
         return userService.getUserContactInf(userUuid);
     }
 
+    @GetMapping("/{userUuid}/education-details")
+    public ResponseEntity<CollectionModel<?>> getUserEducationInfo(@NonNull @PathVariable String userUuid) {
+        return userService.getUserEducationDetails(userUuid);
+    }
+
+    @GetMapping("/{userUuid}/employment-details")
+    public ResponseEntity<CollectionModel<?>> getUserEmploymentDetails(@NonNull @PathVariable String userUuid){
+        return userService.getUserEmploymentDetails(userUuid);
+    }
+
+    @GetMapping("/{userUuid}/skill-details")
+    public ResponseEntity<CollectionModel<?>> getUserSkillsDetails(@NonNull @PathVariable String userUuid){
+        return userService.getUserSkillDetails(userUuid);
+    }
 
 }

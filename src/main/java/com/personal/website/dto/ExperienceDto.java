@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDate;
 
 @Builder
 @AllArgsConstructor
 @Getter
+@Relation(collectionRelation = "experienceDetails")
 public class ExperienceDto extends RepresentationModel<ExperienceDto> {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

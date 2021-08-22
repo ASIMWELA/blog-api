@@ -1,7 +1,7 @@
 package com.personal.website.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.personal.website.entity.ProjectDetailsEntity;
+import com.personal.website.entity.ProjectEntity;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
@@ -24,7 +24,7 @@ public class ProjectDto extends RepresentationModel<ProjectDto> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String locationLink;
 
-    public static ProjectDto build(ProjectDetailsEntity entity) {
+    public static ProjectDto build(ProjectEntity entity) {
         ProjectDto projectDto = null;
         if (entity.getCollaborators() == null) {
             projectDto = ProjectDto.builder()

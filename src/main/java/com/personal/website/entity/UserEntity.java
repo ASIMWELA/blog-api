@@ -69,6 +69,8 @@ public class UserEntity extends BaseEntity
     @JoinColumn(name="contact_info_id", referencedColumnName = "id")
     ContactInfoEntity contactInfo;
 
+    String message;
+
 
     @OneToMany(mappedBy = "user",cascade = {CascadeType.REMOVE})
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -89,7 +91,7 @@ public class UserEntity extends BaseEntity
 
     @OneToMany(mappedBy = "user",cascade = {CascadeType.REMOVE})
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    List<ProjectDetailsEntity> projects;
+    List<ProjectEntity> projects;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JsonInclude(JsonInclude.Include.NON_NULL)
