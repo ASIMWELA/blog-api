@@ -2,10 +2,11 @@ package com.personal.website.event;
 
 
 import com.personal.website.entity.MessageEntity;
-import com.personal.website.service.UserService;
+import com.personal.website.service.ChatMessageService;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -15,11 +16,11 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 
 @Component
+@FieldDefaults(makeFinal = true)
+@RequiredArgsConstructor
 public class WebSocketEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
-
-    @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
     @EventListener
@@ -27,9 +28,7 @@ public class WebSocketEventListener {
 
         logger.info("Received a new web socket connection" );
     }
-
-    @Autowired
-    private UserService userService;
+    ChatMessageService chatMessageService;
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
@@ -43,7 +42,7 @@ public class WebSocketEventListener {
             chatMessage.setType("LEAVE");
             chatMessage.setSender(username);
 
-            userService.toggleUserPresence(username, true);
+            chatMessageService.toggleUserPresence(username, true);
 
             messagingTemplate.convertAndSend("/topic/pubic", chatMessage);
 

@@ -11,6 +11,7 @@ import com.personal.website.payload.*;
 import com.personal.website.repository.*;
 import com.personal.website.service.ChatMessageService;
 import com.personal.website.service.UserService;
+import com.personal.website.service.UserServiceImpl;
 import com.personal.website.utils.AppConstants;
 import com.personal.website.utils.CheckUserRole;
 import lombok.AccessLevel;
@@ -64,7 +65,7 @@ public class UserController {
     JavaMailSender javaMailSender;
 
 
-    public UserController(UserService userService, PasswordEncoder encoder, ChatMessageService chatMessageService, MessageRepository messageRepository, ExperienceRepository experienceRepository, UserRepository userRepository, UserAssembler userAssembler, ResourceAssembler resourceAssembler, SkillsRepository skillsRepository, EducationRepository educationRepository, ContactInfoRepository contactInfoRepository, EmploymentRepository employmentRepository, JavaMailSender javaMailSender) {
+    public UserController(UserServiceImpl userService, PasswordEncoder encoder, ChatMessageService chatMessageService, MessageRepository messageRepository, ExperienceRepository experienceRepository, UserRepository userRepository, UserAssembler userAssembler, ResourceAssembler resourceAssembler, SkillsRepository skillsRepository, EducationRepository educationRepository, ContactInfoRepository contactInfoRepository, EmploymentRepository employmentRepository, JavaMailSender javaMailSender) {
         this.userService = userService;
         this.encoder = encoder;
         this.chatMessageService = chatMessageService;
@@ -95,7 +96,7 @@ public class UserController {
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<CollectionModel<?>> getUserExperience(@PathVariable String userUuid) {
-        return userService.getUserExperience(userUuid);
+        return userService.getAdminExperience(userUuid);
     }
 
 
@@ -451,9 +452,7 @@ public class UserController {
 
     public ResponseEntity<ApiResponse> deleteExperience(@PathVariable("name") String name, @PathVariable("user") String userName) {
 
-        userService.deleteUserExperience(name, userName);
-
-        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Experience deleted successfully"), HttpStatus.OK);
+       return userService.deleteAdminExperience(name, userName);
     }
 
 
@@ -561,7 +560,7 @@ public class UserController {
 
         String location = uploadDir + "/" + fileName;
 
-        UserService.saveFile(uploadDir, fileName, imageFile);
+        userService.uploadPhoto(uploadDir, fileName, imageFile);
 
         user.setProfilePicPath(location);
 
@@ -574,22 +573,22 @@ public class UserController {
 
     @GetMapping("/{userUuid}/contact-info")
     public ResponseEntity<ContactInfoDto> getUserContactInfo(@NonNull @PathVariable String userUuid) {
-        return userService.getUserContactInf(userUuid);
+        return userService.getAdminContactInf(userUuid);
     }
 
     @GetMapping("/{userUuid}/education-details")
     public ResponseEntity<CollectionModel<?>> getUserEducationInfo(@NonNull @PathVariable String userUuid) {
-        return userService.getUserEducationDetails(userUuid);
+        return userService.getAdminEducationDetails(userUuid);
     }
 
     @GetMapping("/{userUuid}/employment-details")
     public ResponseEntity<CollectionModel<?>> getUserEmploymentDetails(@NonNull @PathVariable String userUuid){
-        return userService.getUserEmploymentDetails(userUuid);
+        return userService.getAdminEmploymentDetails(userUuid);
     }
 
     @GetMapping("/{userUuid}/skill-details")
     public ResponseEntity<CollectionModel<?>> getUserSkillsDetails(@NonNull @PathVariable String userUuid){
-        return userService.getUserSkillDetails(userUuid);
+        return userService.getAdminSkillDetails(userUuid);
     }
 
 }

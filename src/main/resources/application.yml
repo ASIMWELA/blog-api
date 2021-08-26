@@ -24,7 +24,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -59,3 +59,7 @@ app:
   emailReceiver: ${env.GMAIL_USER_NAME}
   jwtSecret: ${env.JWT_SECRETE}
   jwtExpirationMs: ${env.JWT_EXPIRATION_M_SECONDS}
+  bot:
+    userName: ${env.BOT_USER_NAME}
+    secrete: ${env.BOT_SECRET}
+    chatId: ${env.ADMIN_CHAT_DETAIL}

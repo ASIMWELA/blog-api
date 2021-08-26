@@ -2,9 +2,13 @@ package com.personal.website.service;
 
 
 import com.personal.website.entity.MessageEntity;
+import com.personal.website.entity.UserEntity;
 import com.personal.website.exception.EntityNotFoundException;
 import com.personal.website.payload.MessageStatus;
 import com.personal.website.repository.MessageRepository;
+import com.personal.website.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -14,10 +18,12 @@ import java.util.List;
 
 
 @Service
-public class ChatMessageService
-{
-    @Autowired private MessageRepository messageRepository;
-    @Autowired private ChatRoomService chatRoomService;
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true)
+public class ChatMessageService {
+    UserRepository userRepository;
+    private MessageRepository messageRepository;
+    private ChatRoomService chatRoomService;
     //@Autowired private MongoOperations mongoOperations;
 
     public MessageEntity save(MessageEntity chatMessage) {
@@ -26,21 +32,20 @@ public class ChatMessageService
         return chatMessage;
     }
 
-    public long countNewMessages(String senderId, String recipientId)
-    {
+    public long countNewMessages(String senderId, String recipientId) {
         return messageRepository.countBySenderIdAndRecipientIdAndStatus(
                 senderId, recipientId, MessageStatus.RECEIVED);
     }
 
     public List<MessageEntity> findChatMessages(String senderId, String recipientId) {
         String chatId = chatRoomService.getChatId(senderId, recipientId, false);
-        if(!(chatId==null)){
+        if (!(chatId == null)) {
             List<MessageEntity> messages = messageRepository.findByChatId(chatId);
 
-            if(messages.size() > 0) {
+            if (messages.size() > 0) {
                 //updateStatuses(senderId, recipientId, MessageStatus.DELIVERED);
-                messages.forEach(message->{
-                    if(message.getSenderId().equals(senderId) && message.getRecipientId().equals(recipientId)){
+                messages.forEach(message -> {
+                    if (message.getSenderId().equals(senderId) && message.getRecipientId().equals(recipientId)) {
                         message.setStatus(MessageStatus.DELIVERED);
                         messageRepository.save(message);
                     }
@@ -50,8 +55,7 @@ public class ChatMessageService
             }
 
             return messages;
-        }
-        else {
+        } else {
             return new ArrayList<>();
         }
 
@@ -68,12 +72,19 @@ public class ChatMessageService
                         new EntityNotFoundException("can't find message (" + id + ")"));
     }
 
-//    public void updateStatuses(String senderId, String recipientId, MessageStatus status) {
-//        Query query = new Query(
-//                Criteria
-//                        .where("senderId").is(senderId)
-//                        .and("recipientId").is(recipientId));
-//        Update update = Update.update("status", status);
-//        mongoOperations.updateMulti(query, update, ChatMessage.class);
-//    }
+    public void toggleUserPresence(String userName, boolean isPresent) {
+
+        UserEntity user = userRepository.findByUserName(userName).orElseThrow(
+                () -> new EntityNotFoundException("UserDto not found")
+        );
+
+        this.setIsPresent(user, isPresent);
+
+    }
+
+    public void setIsPresent(UserEntity user, boolean isPresent) {
+        user.setOnline(isPresent);
+        userRepository.save(user);
+    }
+
 }

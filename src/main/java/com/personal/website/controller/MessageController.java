@@ -4,46 +4,30 @@ package com.personal.website.controller;
 import com.personal.website.entity.MessageEntity;
 import com.personal.website.payload.ChatNotification;
 import com.personal.website.repository.MessageRepository;
-import com.personal.website.repository.UserRepository;
 import com.personal.website.service.ChatMessageService;
 import com.personal.website.service.ChatRoomService;
-import com.personal.website.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true)
 public class MessageController
 {
-    @Autowired
     private MessageRepository messageRepository;
-
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
+    private ChatMessageService chartMessageService;
     private SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
     private ChatMessageService chatMessageService;
-
-    @Autowired
     private ChatRoomService chatRoomService;
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
@@ -62,7 +46,7 @@ public class MessageController
 
         if(chatMessage.getType().equals("LEAVE"))
         {
-            userService.toggleUserPresence(chatMessage.getSender(), false);
+            chartMessageService.toggleUserPresence(chatMessage.getSender(), false);
         }
 
         return chatMessage;
@@ -74,7 +58,7 @@ public class MessageController
     {
         // Add user in web socket session
 
-        userService.toggleUserPresence(chatMessage.getSender(), true);
+        chartMessageService.toggleUserPresence(chatMessage.getSender(), true);
 
         messageRepository.save(chatMessage);
 
@@ -92,10 +76,10 @@ public class MessageController
         // Add user in web socket session
 
         if(chatMessage.getType().equals("JOIN")){
-            userService.toggleUserPresence(chatMessage.getSender(), true);
+            chartMessageService.toggleUserPresence(chatMessage.getSender(), true);
         }
         if(chatMessage.getType().equals("LEAVE")){
-            userService.toggleUserPresence(chatMessage.getSender(), false);
+            chartMessageService.toggleUserPresence(chatMessage.getSender(), false);
         }
 
     }

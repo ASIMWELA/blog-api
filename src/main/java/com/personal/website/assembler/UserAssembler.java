@@ -28,7 +28,7 @@ public class UserAssembler implements RepresentationModelAssembler<UserEntity, U
                     .uid(entity.getUuid())
                     .profilePicPath(entity.getProfilePicPath())
                     .build()
-                    .add(linkTo(methodOn(UserController.class).getUser(entity.getUuid())).withSelfRel());
+                    .add(linkTo(methodOn(UserController.class).getUser(entity.getUuid())).withRel("profile"));
         } else {
             model = UserDto.builder()
                     .email(entity.getEmail())

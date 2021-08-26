@@ -12,10 +12,8 @@ import com.personal.website.repository.PasswordResetTokenRepository;
 import com.personal.website.repository.RoleRepository;
 import com.personal.website.repository.UserRepository;
 import com.personal.website.security.JwtTokenProvider;
-import com.personal.website.service.UserService;
-import lombok.AccessLevel;
+import com.personal.website.service.UserServiceImpl;
 import lombok.SneakyThrows;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,13 +43,13 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
     JwtTokenProvider jwtUtils;
     JavaMailSender javaMailSender;
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
 
     @Value("${app.emailOrigin}")
     String emailSender;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtUtils, JavaMailSender javaMailSender, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtUtils, JavaMailSender javaMailSender, UserServiceImpl userServiceImpl) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -59,7 +57,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.javaMailSender = javaMailSender;
-        this.userService = userService;
+        this.userServiceImpl = userServiceImpl;
     }
 
 

@@ -1,7 +1,6 @@
 package com.personal.website.config;
 
-import com.personal.website.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.personal.website.service.UserServiceImpl;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,10 +12,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer
 {
 
-    final UserService userService;
+    final UserServiceImpl userServiceImpl;
 
-    public WebSocketConfig(UserService userService) {
-        this.userService = userService;
+    public WebSocketConfig(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Override

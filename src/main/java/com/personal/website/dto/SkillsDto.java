@@ -1,5 +1,6 @@
 package com.personal.website.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.personal.website.entity.SkillEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,9 @@ import java.util.List;
 @Getter
 @Relation("skillsDetails")
 public class SkillsDto extends RepresentationModel<SkillsDto> {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technology;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     List<String> skills;
     String message;
     public static SkillsDto build(SkillEntity entity){

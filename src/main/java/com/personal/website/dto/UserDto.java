@@ -5,6 +5,7 @@ import com.personal.website.controller.ProjectController;
 import com.personal.website.controller.UserController;
 import com.personal.website.entity.RoleEntinty;
 import com.personal.website.entity.UserEntity;
+import com.personal.website.utils.AppConstants;
 import com.personal.website.utils.CheckUserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,7 +68,7 @@ public class UserDto extends RepresentationModel<UserDto> {
                     .profilePicPath(entity.getProfilePicPath())
                     .isOnline(entity.isOnline())
                     .build()
-                    .add(linkTo(methodOn(ProjectController.class).getAllProjects()).withRel("projects"))
+                    .add(linkTo(methodOn(ProjectController.class).getAdminProjects(AppConstants.DEFAULT_PAGE_NUMBER, AppConstants.DEFAULT_PAGE_SIZE, entity.getUuid())).withRel("projects"))
                     .add(linkTo(methodOn(UserController.class).getUserExperience(entity.getUuid())).withRel("experience"))
                     .add(linkTo(methodOn(UserController.class).getUserContactInfo(entity.getUuid())).withRel("contact-info"))
                     .add(linkTo(methodOn(UserController.class).getUserSkillsDetails(entity.getUuid())).withRel("skills"))

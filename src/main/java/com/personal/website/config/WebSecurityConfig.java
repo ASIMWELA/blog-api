@@ -89,6 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST,
              "/api/v1/auth/login",
+                        "/api/v1/bots",
                         "/api/v1/users/subscribers",
                         "/api/v1/auth/forgot-password",
                         "/api/v1/auth/reset-password",
@@ -98,6 +99,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                     .antMatchers(HttpMethod.GET,
                         "/api/v1/resources",
                                     "/api/v1/users/**",
+                            "/api/v1/bots",
                             "/api/v1/users/{userUuid}/experience",
                                     "/api/v1/projects",
                                     "/api/v1/projects/**",

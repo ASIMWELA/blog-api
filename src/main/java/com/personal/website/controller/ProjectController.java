@@ -1,14 +1,12 @@
 package com.personal.website.controller;
 
-import com.personal.website.assembler.ProjectAssembler;
-import com.personal.website.dto.ProjectDto;
 import com.personal.website.entity.ProjectEntity;
 import com.personal.website.exception.EntityNotFoundException;
 import com.personal.website.payload.ApiResponse;
 import com.personal.website.repository.ProjectDetailsRepository;
-import com.personal.website.service.ProjectDetailsService;
+import com.personal.website.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -29,38 +24,14 @@ public class ProjectController {
     private ProjectDetailsRepository projectDetailsRepository;
 
     @Autowired
-    private ProjectAssembler projectAssembler;
-
-    @Autowired
-    private ProjectDetailsService projectDetailsService;
-
+    private ProjectService projectService;
 
     @RequestMapping(
+            value = "/{adminUuid}",
             method = RequestMethod.GET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<CollectionModel<ProjectDto>> getAllProjects() {
-        List<ProjectEntity> projects = projectDetailsRepository.findAll();
-
-        return new ResponseEntity<>(projectAssembler.toCollectionModel(projects), HttpStatus.OK);
-
-    }
-
-    @RequestMapping(
-            value = "/{projectName}",
-            method = RequestMethod.GET,
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE}
-                    )
-    public ProjectDto getProject(@PathVariable("projectName") String projectName) {
-
-           ProjectEntity entity = projectDetailsRepository.findByName(projectName).orElseThrow(() -> new EntityNotFoundException("NO UserDto with id " + projectName));
-
-           ProjectDto model = ProjectDto.build(entity);
-           model.add(linkTo(methodOn(ProjectController.class)
-                        .getAllProjects()).withRel("projects"));
-
-        return model;
+    public ResponseEntity<PagedModel<?>> getAdminProjects(@PositiveOrZero(message = "page number cannot be negative") @RequestParam(defaultValue = "0") Integer page, @PositiveOrZero(message = "page number cannot be negative") @RequestParam(defaultValue = "20") Integer size, @PathVariable String adminUuid) {
+       return projectService.getAdminProjects(page, size, adminUuid);
     }
 
     @RequestMapping(method = RequestMethod.POST,
@@ -72,9 +43,9 @@ public class ProjectController {
     public  ResponseEntity<ApiResponse> addProject(@NotNull @RequestBody ProjectEntity projectEntity) throws InterruptedException
     {
 
-        projectDetailsService.saveProject(projectEntity);
+        projectService.saveProject(projectEntity);
 
-        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "project added successfully" ),HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(true, "project added successfully" ),HttpStatus.CREATED);
 
     }
     @RequestMapping(value="/{projectName}",
@@ -87,7 +58,7 @@ public class ProjectController {
     public  ResponseEntity<ApiResponse> editProjectEntity(@PathVariable("projectName") String projectName, @NotBlank @RequestBody ProjectEntity projectEntity) throws InterruptedException
     {
 
-        projectDetailsService.editProject(projectName, projectEntity);
+        projectService.editProject(projectName, projectEntity);
 
         return new ResponseEntity<ApiResponse>(new ApiResponse(true,"project updated successfully" ),HttpStatus.OK);
 
@@ -105,7 +76,7 @@ public class ProjectController {
 
         projectDetailsRepository.delete(entity);
 
-        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "project deletion successful" ),HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, "project deletion successful" ),HttpStatus.OK);
 
     }
 }
