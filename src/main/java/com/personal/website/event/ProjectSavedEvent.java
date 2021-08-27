@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEvent;
 
 public class ProjectSavedEvent extends ApplicationEvent
 {
-    private ProjectEntity projectEntity;
+    private final ProjectEntity projectEntity;
 
     public ProjectSavedEvent( ProjectEntity projectEntity)
     {

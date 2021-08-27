@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ProjectSavedEventListener implements ApplicationListener<ProjectSavedEvent>
-{
+public class ProjectSavedEventListener implements ApplicationListener<ProjectSavedEvent> {
 
     @Autowired
     private SendEmail sendEmail;
@@ -24,15 +23,14 @@ public class ProjectSavedEventListener implements ApplicationListener<ProjectSav
     @SneakyThrows
     @Async
     @Override
-    public void onApplicationEvent(ProjectSavedEvent event)
-    {
+    public void onApplicationEvent(ProjectSavedEvent event) {
         Thread.sleep(10000);
 
         List<UserEntity> userEntityList = userRepository.findAll();
-        if(userEntityList.isEmpty())
+        if (userEntityList.isEmpty())
             throw new Exception("");
 
-        sendEmail.sendProjectAddedEmail(userEntityList,event.getProjectDetailsEntity());
+        sendEmail.sendProjectAddedEmail(userEntityList, event.getProjectDetailsEntity());
 
     }
 }

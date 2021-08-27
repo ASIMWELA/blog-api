@@ -2,6 +2,7 @@ package com.personal.website.service;
 
 
 import com.personal.website.entity.BotChatEntity;
+import com.personal.website.event.AdminMessageBroadCastedEvent;
 import com.personal.website.payload.ApiResponse;
 import com.personal.website.payload.bot.BotMessage;
 import com.personal.website.repository.BotChatRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -27,10 +29,12 @@ public class BotServiceImpl extends TelegramLongPollingBot implements BotService
 
     RestTemplate restTemplate;
     BotChatRepository botChatRepository;
+    ApplicationEventPublisher applicationEventPublisher;
 
-    public BotServiceImpl(RestTemplate restTemplate, BotChatRepository botChatRepository) {
+    public BotServiceImpl(RestTemplate restTemplate, BotChatRepository botChatRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.restTemplate = restTemplate;
         this.botChatRepository = botChatRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @NonNull
@@ -56,18 +60,18 @@ public class BotServiceImpl extends TelegramLongPollingBot implements BotService
 
     @Override
     public void onUpdateReceived(Update update) {
-//        log.info("From:"+ update.getMessage().getFrom().getFirstName());
-//        log.info("chatId :"+ update.getMessage().getChatId());
-//        log.info("Message :"+update.getMessage().getText());
+        if(update.getMessage().getChatId() == adminChatId){
+            BotChatEntity botChatEntity = BotChatEntity.builder()
+                    .message(update.getMessage().getText())
+                    .messageDate(new Date(update.getMessage().getDate()))
+                    .messageFrom(update.getMessage().getFrom().getFirstName())
+                    .build();
 
-        BotChatEntity botChatEntity = BotChatEntity.builder()
-                .message(update.getMessage().getText())
-                .messageDate(new Date(update.getMessage().getDate()))
-                .messageFrom(update.getMessage().getFrom().getFirstName())
-                .build();
-        botChatEntity.setUuid(UidGenerator.generateRandomString(12));
-        botChatRepository.save(botChatEntity);
-
+            botChatEntity.setUuid(UidGenerator.generateRandomString(12));
+            botChatRepository.save(botChatEntity);
+            AdminMessageBroadCastedEvent event = new AdminMessageBroadCastedEvent(botChatEntity);
+            applicationEventPublisher.publishEvent(event);
+        }
     }
 
     @Override

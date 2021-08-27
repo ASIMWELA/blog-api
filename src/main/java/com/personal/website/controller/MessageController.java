@@ -21,8 +21,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true)
-public class MessageController
-{
+public class MessageController {
     private MessageRepository messageRepository;
     private ChatMessageService chartMessageService;
     private SimpMessagingTemplate messagingTemplate;
@@ -36,16 +35,13 @@ public class MessageController
     /*-------------------- Group (Public) chat--------------------*/
     @MessageMapping("/sendMessage")
     @SendTo("/topic/public")
-    public MessageEntity sendMessage(@Payload MessageEntity chatMessage)
-    {
+    public MessageEntity sendMessage(@Payload MessageEntity chatMessage) {
 
-        if(!chatMessage.getType().equals("TYPING"))
-        {
+        if (!chatMessage.getType().equals("TYPING")) {
             messageRepository.save(chatMessage);
         }
 
-        if(chatMessage.getType().equals("LEAVE"))
-        {
+        if (chatMessage.getType().equals("LEAVE")) {
             chartMessageService.toggleUserPresence(chatMessage.getSender(), false);
         }
 
@@ -54,8 +50,7 @@ public class MessageController
 
     @MessageMapping("/addUser")
     @SendTo("/topic/public")
-    public MessageEntity addUser(@Payload MessageEntity chatMessage, SimpMessageHeaderAccessor headerAccessor )
-    {
+    public MessageEntity addUser(@Payload MessageEntity chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         // Add user in web socket session
 
         chartMessageService.toggleUserPresence(chatMessage.getSender(), true);
@@ -65,29 +60,23 @@ public class MessageController
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
 
 
-       return chatMessage;
+        return chatMessage;
         //return chatMessage;
 
     }
 
     @MessageMapping("/toggleAdmin")
-    public void toggleAdmin(@Payload MessageEntity chatMessage )
-    {
+    public void toggleAdmin(@Payload MessageEntity chatMessage) {
         // Add user in web socket session
 
-        if(chatMessage.getType().equals("JOIN")){
+        if (chatMessage.getType().equals("JOIN")) {
             chartMessageService.toggleUserPresence(chatMessage.getSender(), true);
         }
-        if(chatMessage.getType().equals("LEAVE")){
+        if (chatMessage.getType().equals("LEAVE")) {
             chartMessageService.toggleUserPresence(chatMessage.getSender(), false);
         }
 
     }
-
-
-
-
-    /*--------------------Private chat--------------------*/
 
     @MessageMapping("/privateChat")
     public void processMessage(@Payload MessageEntity chatMessage) {
@@ -98,7 +87,7 @@ public class MessageController
 
         MessageEntity saved = chatMessageService.save(chatMessage);
         messagingTemplate.convertAndSendToUser(
-                chatMessage.getRecipientId(),"/queue/messages",
+                chatMessage.getRecipientId(), "/queue/messages",
                 new ChatNotification(
                         saved.getId(),
                         saved.getSenderId(),
