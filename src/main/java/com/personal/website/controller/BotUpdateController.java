@@ -21,13 +21,12 @@ public class BotUpdateController {
     BotService botService;
 
     @PostMapping( consumes = "application/json", produces = "application/json")
-    ResponseEntity<ApiResponse> sendMessageToAdmin(@NonNull @RequestBody BotMessage botMessage){
+    public BotChatEntity sendMessageToAdmin(@NonNull @RequestBody BotMessage botMessage){
         return  botService.sendMessage(botMessage);
     }
     @GetMapping( consumes = "application/json", produces = "application/json")
-    ResponseEntity<List<BotChatEntity>> getBotChatMessages(){
+    public ResponseEntity<List<BotChatEntity>> getBotChatMessages(){
         return  botService.getBotMessages();
     }
-
 
 }

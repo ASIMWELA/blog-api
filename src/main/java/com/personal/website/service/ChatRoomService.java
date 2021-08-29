@@ -3,28 +3,26 @@ package com.personal.website.service;
 
 import com.personal.website.entity.ChatRoom;
 import com.personal.website.repository.ChatRoomRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ChatRoomService {
 
-    @Autowired
     private ChatRoomRepository chatRoomRepository;
 
     public String getChatId(
             String senderId, String recipientId, boolean createIfNotExist) {
-
         String chartId;
 
         String chatId = chatRoomRepository
                 .getChatId(senderId, recipientId);
 
-        if(chatId==null)
-        {
-            if(createIfNotExist)
-            {
-                chartId =  senderId+"_"+recipientId;
+        if (chatId == null) {
+            if (createIfNotExist) {
+                chartId = senderId + "_" + recipientId;
 
                 ChatRoom senderRecipient = ChatRoom
                         .builder()
@@ -41,21 +39,17 @@ public class ChatRoomService {
                         .build();
                 chatRoomRepository.save(senderRecipient);
                 chatRoomRepository.save(recipientSender);
-            }
-            else
-            {
+            } else {
                 chartId = null;
             }
 
-        }
-        else
-        {
+        } else {
             chartId = chatId;
 
 
         }
 
-    return chartId;
+        return chartId;
 
 
     }

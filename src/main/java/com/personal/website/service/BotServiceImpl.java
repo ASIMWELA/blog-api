@@ -3,6 +3,8 @@ package com.personal.website.service;
 
 import com.personal.website.entity.BotChatEntity;
 import com.personal.website.event.AdminMessageBroadCastedEvent;
+import com.personal.website.exception.OperationNotAllowedException;
+import com.personal.website.exception.OperationNotSuccessfulException;
 import com.personal.website.payload.ApiResponse;
 import com.personal.website.payload.bot.BotMessage;
 import com.personal.website.repository.BotChatRepository;
@@ -60,6 +62,8 @@ public class BotServiceImpl extends TelegramLongPollingBot implements BotService
 
     @Override
     public void onUpdateReceived(Update update) {
+
+        //filter only messages from admin chat
         if(update.getMessage().getChatId() == adminChatId){
             BotChatEntity botChatEntity = BotChatEntity.builder()
                     .message(update.getMessage().getText())
@@ -69,13 +73,15 @@ public class BotServiceImpl extends TelegramLongPollingBot implements BotService
 
             botChatEntity.setUuid(UidGenerator.generateRandomString(12));
             botChatRepository.save(botChatEntity);
+
+            //publish an event
             AdminMessageBroadCastedEvent event = new AdminMessageBroadCastedEvent(botChatEntity);
             applicationEventPublisher.publishEvent(event);
         }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> sendMessage(BotMessage botMessage) {
+    public BotChatEntity sendMessage(BotMessage botMessage) {
         BotMessage b = new BotMessage();
         b.setText(botMessage.getText());
         b.setChat_id(adminChatId);
@@ -90,10 +96,9 @@ public class BotServiceImpl extends TelegramLongPollingBot implements BotService
                     .messageDate(new Date(jsonObject.getJSONObject("result").getInt("date")))
                     .build();
             botChatEntity.setUuid(UidGenerator.generateRandomString(12));
-            botChatRepository.save(botChatEntity);
-            return new ResponseEntity<>(new ApiResponse(true, "Message sent"), HttpStatus.OK);
+         return botChatRepository.save(botChatEntity);
         }else {
-            return new ResponseEntity<>(new ApiResponse(false, "Message not sent"), HttpStatus.BAD_REQUEST);
+            throw new OperationNotSuccessfulException("Message not sent");
         }
 
     }

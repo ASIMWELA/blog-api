@@ -1,5 +1,6 @@
 package com.personal.website.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.personal.website.controller.ProjectController;
 import com.personal.website.controller.UserController;
@@ -48,6 +49,7 @@ public class UserDto extends RepresentationModel<UserDto> {
     private String sex;
     private boolean isAccountActive;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     private LocalDate dateOfBirth;
     List<RoleEntinty> roles;
 
@@ -63,8 +65,8 @@ public class UserDto extends RepresentationModel<UserDto> {
                     .sex(entity.getSex())
                     .isAccountActive(entity.isAccountActive())
                     .uid(entity.getUuid())
+                    .roles(entity.getRoles())
                     .age(entity.getAge())
-                    .dateOfBirth(entity.getDateOfBirth())
                     .profilePicPath(entity.getProfilePicPath())
                     .isOnline(entity.isOnline())
                     .build()
@@ -80,6 +82,7 @@ public class UserDto extends RepresentationModel<UserDto> {
                     .isOnline(entity.isOnline())
                     .isAccountActive(entity.isAccountActive())
                     .uid(entity.getUuid())
+                    .roles(entity.getRoles())
                     .build();
         }
         return model;

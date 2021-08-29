@@ -12,6 +12,6 @@ public interface BotService {
     String getBotUsername();
     String getBotToken();
     void onUpdateReceived(Update update);
-    ResponseEntity<ApiResponse> sendMessage(BotMessage botMessage);
+    BotChatEntity sendMessage(BotMessage botMessage);
     ResponseEntity<List<BotChatEntity>> getBotMessages();
 }

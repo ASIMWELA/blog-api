@@ -7,4 +7,4 @@ INSERT INTO experience_table(uuid,exp_name, began_on,years,months,user_id) VALUE
 INSERT INTO user_roles_table(user_id, role_id) VALUES(1,2);
 INSERT INTO user_roles_table(user_id, role_id) VALUES(2,1);
 
-INSERT INTO projects_table(uuid,description,location_link,name,role,user_id)VALUES('qwertyuiopdf','INTRODUCTION TO JAVA','www.learnjava.com','Java','lead developer',1),('qwegtyuiopdf','MOBILE APPLICATION DEVELOPEMNT','www.learnANDROID.com','android','lead developer',1),('qwertyuiopgf','INTRODUCTION TO django','www.learnpython.com','pythno','lead developer',1);
+INSERT INTO projects_table(uuid,description,location_link,name,role)VALUES('qwertyuiopdf','INTRODUCTION TO JAVA','www.learnjava.com','Java','lead developer'),('qwegtyuiopdf','MOBILE APPLICATION DEVELOPEMNT','www.learnANDROID.com','android','lead developer'),('qwertyuiopgf','INTRODUCTION TO django','www.learnpython.com','pythno','lead developer');

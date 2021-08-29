@@ -75,7 +75,6 @@ public class UserServiceImpl implements UserService{
 
         if (userRepository.existsByEmail(signUpRequest.getEmail()))
             throw new EntityAlreadyExistException("Email already taken. Try different one");
-
         UserEntity user = UserEntity.builder()
                 .dateOfBirth(signUpRequest.getDateOfBirth())
                 .email(signUpRequest.getEmail())
@@ -103,11 +102,30 @@ public class UserServiceImpl implements UserService{
         UserEntity entity = userRepository.findByUserName(adminUsername).orElseThrow(
                 () -> new EntityNotFoundException("No user with username" + adminUsername)
         );
-
         if (CheckUserRole.isAdmin(user.getRoles())) {
-
-            userRepository.updateUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), entity.getUserName());
-            userRepository.save(user);
+            //check the values in the entinty
+            if (user.getUserName() != null) {
+                entity.setUserName(user.getUserName());
+            }
+            if(user.getLastName() != null){
+                entity.setLastName(user.getLastName());
+            }
+            if(user.getEmail() != null){
+                entity.setEmail(user.getEmail());
+            }
+            if(user.getDateOfBirth() != null){
+                entity.setDateOfBirth(user.getDateOfBirth());
+            }
+            if(user.getPassword() != null){
+                entity.setPassword(encoder.encode(user.getPassword()));
+            }
+            if(user.getSex() != null){
+                entity.setSex(user.getSex());
+            }
+            if(user.getFirstName() != null){
+                entity.setFirstName(user.getFirstName());
+            }
+            userRepository.save(entity);
             return new ResponseEntity<>(new ApiResponse(true, "Admin updated"), HttpStatus.OK);
         } else {
             throw new OperationNotAllowedException("Subscribers cannot have profile picture");
@@ -140,7 +158,6 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
         sendEmail.sendSuccessEmail(user);
         return new ResponseEntity<>(new ApiResponse(true, "Subscription successful"), HttpStatus.CREATED);
-
     }
 
     @Override
@@ -163,7 +180,6 @@ public class UserServiceImpl implements UserService{
     public ResponseEntity<ApiResponse> addExperience(ExperienceEntity experienceEntity, String adminUsername) {
         UserEntity user = userRepository.findByUserName(adminUsername)
                 .orElseThrow(() -> new EntityNotFoundException("No user with username " + adminUsername));
-
         if (experienceRepository.existsByName(experienceEntity.getName()))
             throw new EntityAlreadyExistException("Experience name already exist. Try a different one");
 
@@ -203,7 +219,6 @@ public class UserServiceImpl implements UserService{
     public ResponseEntity<ApiResponse> addSkill(@NotBlank SkillEntity skillEntity, String adminUsername) {
         UserEntity user = userRepository.findByUserName(adminUsername)
                 .orElseThrow(() -> new EntityNotFoundException("No user with username " + adminUsername));
-
         if (skillsRepository.existsByTechnology(skillEntity.getTechnology()))
             throw new EntityAlreadyExistException("Technology already added");
 
@@ -214,7 +229,7 @@ public class UserServiceImpl implements UserService{
             user.setSkills(skills);
             skillsRepository.save(skillEntity);
             userRepository.save(user);
-            return new ResponseEntity<>(new ApiResponse(true, "Skills added successly"), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(true, "Skills added successfully"), HttpStatus.OK);
         } else {
             throw new OperationNotAllowedException("Subscribers cannot have skills details");
         }
@@ -223,15 +238,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ResponseEntity<ApiResponse> updateSkill(SkillEntity entity, String adminUsername) {
-       //TODO: UPDATE COLLECTLY
-
+       //TODO: implement edit if necessary
         UserEntity user = userRepository.findByUserName(adminUsername)
                 .orElseThrow(() -> new EntityNotFoundException("No user with username " + adminUsername));
 
         if (CheckUserRole.isAdmin(user.getRoles())) {
             SkillEntity skill = skillsRepository.findByTechnology(entity.getTechnology()).orElseThrow(
-                    () -> new EntityNotFoundException("No skill with that technology found")
-            );
+                    () -> new EntityNotFoundException("No skill with that technology found"));
+            user.getSkills().forEach(skil->{
+                if(skil.getTechnology().equals(skill.getTechnology())){
+                    List<String> userSKills = skil.getSkills();
+                    userSKills.addAll(entity.getSkills());
+                    skil.setSkills(userSKills);
+                    skillsRepository.save(skil);
+                }
+            });
             skillsRepository.updateUpdateSkill(entity.getSkills(), entity.getTechnology());
             //skillsRepository.save(newSkill);
             userRepository.save(user);
@@ -263,18 +284,10 @@ public class UserServiceImpl implements UserService{
 
     }
 
+    //TODO: implement edit if necessary
     @Override
-    public ResponseEntity<ApiResponse> deleteAdminExperience(String expName, String adminUsername) {
-        UserEntity user = userRepository.findByUserName(adminUsername).orElseThrow(
-                () -> new EntityNotFoundException("No user with name" + adminUsername)
-        );
-
-        ExperienceEntity experienceEntity = experienceRepository.findByName(expName).orElseThrow(
-                () -> new EntityNotFoundException("No experience found with name " + expName)
-        );
-        experienceRepository.deleteExperience(experienceEntity.getName(), user);
-
-        return new ResponseEntity<>(new ApiResponse(true, "Experience datails deleted"), HttpStatus.OK);
+    public ResponseEntity<ApiResponse> editEducationDetails(@NotBlank EducationEntity educationEntity, String adminUsername) {
+        return null;
     }
 
     @Override
@@ -377,8 +390,8 @@ public class UserServiceImpl implements UserService{
         List<EmploymentEntity> employmentEntities = user.getEmployment();
         if(employmentEntities.isEmpty()){
             EmbeddedWrappers wrappers = new EmbeddedWrappers(false);
-            EmbeddedWrapper wrapper = wrappers.emptyCollectionOf(EmploymentDto.class);
-            CollectionModel<Object> emptyEmpDetails = new CollectionModel<>(Collections.singletonList(wrapper));
+            EmbeddedWrapper employmentWrapper = wrappers.emptyCollectionOf(EmploymentDto.class);
+            CollectionModel<Object> emptyEmpDetails = new CollectionModel<>(Collections.singletonList(employmentWrapper));
             emptyEmpDetails.add(linkTo(methodOn(UserController.class).getUser(user.getUuid())).withRel("profile"));
             emptyEmpDetails.add(linkTo(methodOn(UserController.class).getAllUsers(AppConstants.DEFAULT_PAGE_NUMBER, AppConstants.DEFAULT_PAGE_SIZE)).withRel("users"));
             return new ResponseEntity<>(emptyEmpDetails, HttpStatus.OK);
@@ -402,8 +415,8 @@ public class UserServiceImpl implements UserService{
         List<SkillEntity> skillEntities = userEntity.getSkills();
           if(skillEntities.isEmpty()){
              EmbeddedWrappers wrappers = new EmbeddedWrappers(false);
-             EmbeddedWrapper wrapper = wrappers.emptyCollectionOf(SkillsDto.class);
-             CollectionModel<Object> skillsDetails = new CollectionModel<>(Collections.singletonList(wrapper));
+             EmbeddedWrapper SkillWrapper = wrappers.emptyCollectionOf(SkillsDto.class);
+             CollectionModel<Object> skillsDetails = new CollectionModel<>(Collections.singletonList(SkillWrapper));
              skillsDetails.add(linkTo(methodOn(UserController.class).getUser(userEntity.getUuid())).withRel("profile"));
              skillsDetails.add(linkTo(methodOn(UserController.class).getAllUsers(AppConstants.DEFAULT_PAGE_NUMBER, AppConstants.DEFAULT_PAGE_SIZE)).withRel("users"));
              return new ResponseEntity<>(skillsDetails, HttpStatus.OK);

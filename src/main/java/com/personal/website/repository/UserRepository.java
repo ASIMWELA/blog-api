@@ -11,19 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long>
-{
-
-    @Transactional
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE user AS s SET s.userName=:newUserName, s.firstName=:newFirstName, s.lastName=:newLastName, s.email=:newEmail, s.password=:newPass WHERE s.userName=:userName")
-    void updateUser(@Param("newUserName") String newUserName, @Param("newFirstName") String newFirstName,@Param("newLastName") String newLastName,@Param("newEmail") String newEmail, @Param("newPass")String password, @Param("userName")  String userName);
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByEmail(String email);
+
     Optional<UserEntity> findByUuid(String uid);
+
     Optional<UserEntity> findByUserName(String userName);
+
     Optional<UserEntity> findByUserNameOrEmail(String username, String email);
+
     boolean existsByEmail(String email);
+
     boolean existsByUserName(String userName);
 
 

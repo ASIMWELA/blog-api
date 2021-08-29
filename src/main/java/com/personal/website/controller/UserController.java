@@ -64,7 +64,6 @@ public class UserController {
     EmploymentRepository employmentRepository;
     JavaMailSender javaMailSender;
 
-
     public UserController(UserServiceImpl userService, PasswordEncoder encoder, ChatMessageService chatMessageService, MessageRepository messageRepository, ExperienceRepository experienceRepository, UserRepository userRepository, UserAssembler userAssembler, ResourceAssembler resourceAssembler, SkillsRepository skillsRepository, EducationRepository educationRepository, ContactInfoRepository contactInfoRepository, EmploymentRepository employmentRepository, JavaMailSender javaMailSender) {
         this.userService = userService;
         this.encoder = encoder;
@@ -130,18 +129,11 @@ public class UserController {
             method = RequestMethod.PUT,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> updateAdmin(@NotNull @RequestBody UpdateAdminRequest request, @PathVariable("userName") String userName) {
+    public ResponseEntity<ApiResponse> updateAdmin(@NotNull @RequestBody UserEntity userEntity, @PathVariable("userName") String userName) {
         UserEntity entity = userRepository.findByUserName(userName).orElseThrow(
                 () -> new EntityNotFoundException("No user with username" + userName)
         );
-
-
-        String password = encoder.encode(request.getPassword());
-
-        userRepository.updateUser(request.getUserName(), request.getFirstName(), request.getLastName(), request.getEmail(), password, entity.getUserName());
-
-        return new ResponseEntity<>(new ApiResponse(true, "Admin details updated successfully"), HttpStatus.OK);
-//
+        return userService.updateAdmin(userEntity, userName);
     }
 
     @RequestMapping(
@@ -443,19 +435,6 @@ public class UserController {
 
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "Skill deleted successfully"), HttpStatus.OK);
     }
-
-    @RequestMapping(
-            value = "/experience/{name}/{user}",
-            method = RequestMethod.DELETE
-    )
-    @PreAuthorize("hasRole('ADMIN')")
-
-    public ResponseEntity<ApiResponse> deleteExperience(@PathVariable("name") String name, @PathVariable("user") String userName) {
-
-       return userService.deleteAdminExperience(name, userName);
-    }
-
-
     @RequestMapping(value = "/chat/messages", method = RequestMethod.GET,
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,

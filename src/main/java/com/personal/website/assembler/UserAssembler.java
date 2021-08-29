@@ -38,7 +38,7 @@ public class UserAssembler implements RepresentationModelAssembler<UserEntity, U
                     .isOnline(entity.isOnline())
                     .uid(entity.getUuid())
                     .build()
-                    .add(linkTo(methodOn(UserController.class).getUser(entity.getUuid())).withSelfRel());
+                    .add(linkTo(methodOn(UserController.class).getUser(entity.getUuid())).withRel("profile"));
         }
         return model;
     }

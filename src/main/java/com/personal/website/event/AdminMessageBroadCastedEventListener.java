@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdminMessageBroadCastedEventListener implements ApplicationListener<AdminMessageBroadCastedEvent> {
 
+
+    //send message to all users subscribed to this end point
     SimpMessagingTemplate messageSender;
     @Override
     public synchronized void onApplicationEvent(AdminMessageBroadCastedEvent adminMessageBroadCastedEvent) {

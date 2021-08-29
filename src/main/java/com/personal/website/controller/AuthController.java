@@ -1,5 +1,6 @@
 package com.personal.website.controller;
 
+import com.personal.website.dto.LoginDto;
 import com.personal.website.entity.PasswordResetToken;
 import com.personal.website.entity.UserEntity;
 import com.personal.website.exception.EntityNotFoundException;
@@ -8,6 +9,7 @@ import com.personal.website.dto.UserDto;
 import com.personal.website.payload.ApiResponse;
 import com.personal.website.payload.LoginRequest;
 import com.personal.website.payload.LoginResponse;
+import com.personal.website.payload.TokenPayload;
 import com.personal.website.repository.PasswordResetTokenRepository;
 import com.personal.website.repository.RoleRepository;
 import com.personal.website.repository.UserRepository;
@@ -76,7 +78,10 @@ public class AuthController {
         UserDto userDtoModel = UserDto.build(entity);
         userDtoModel.add(linkTo(
                         methodOn(UserController.class).getUser(entity.getUuid())).withSelfRel());
-        return ResponseEntity.ok(new LoginResponse(jwt, userDtoModel));
+
+        TokenPayload tokenPayload = TokenPayload.builder().type("Bearer").access_token(jwt).build();
+
+        return ResponseEntity.ok(new LoginDto(tokenPayload, userDtoModel));
     }
 
     @SneakyThrows

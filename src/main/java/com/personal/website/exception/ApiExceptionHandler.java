@@ -100,6 +100,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(OperationNotSuccessfulException.class)
+    protected ResponseEntity<Object> handleOpearationFailed(OperationNotSuccessfulException ex)
+    {
+        ApiException apiError = new ApiException(BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        apiError.setCode(apiError.getStatus().value());
+        return buildResponseEntity(apiError);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String errorList = ex

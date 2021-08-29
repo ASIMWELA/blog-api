@@ -1,7 +1,6 @@
 package com.personal.website.service;
 
 import com.personal.website.dto.ContactInfoDto;
-import com.personal.website.dto.ProjectDto;
 import com.personal.website.dto.UserDto;
 import com.personal.website.entity.*;
 import com.personal.website.payload.ApiResponse;
@@ -23,11 +22,12 @@ public interface UserService {
     ResponseEntity<ApiResponse> addSkill(@NotBlank SkillEntity skillEntity, String adminUsername);
     ResponseEntity<ApiResponse> updateSkill(SkillEntity entity, String adminUsername);
     ResponseEntity<ApiResponse> addEducation(@NotBlank EducationEntity educationEntity, String adminUsername);
-    ResponseEntity<ApiResponse> deleteAdminExperience(String expName, String adminUsername);
+    ResponseEntity<ApiResponse> editEducationDetails(@NotBlank EducationEntity educationEntity, String adminUsername);
     ResponseEntity<ApiResponse> uploadPhoto(String uploadDir, String fileName, MultipartFile imageFile);
     ResponseEntity<CollectionModel<?>> getAdminExperience(String adminUsername);
     ResponseEntity<ContactInfoDto> getAdminContactInf(String adminUuid);
-    ResponseEntity<PagedModel<UserDto>> getAllUsers(int page, int size);  ResponseEntity<CollectionModel<?>> getAdminEducationDetails(String adminUuid);
+    ResponseEntity<PagedModel<UserDto>> getAllUsers(int page, int size);
+    ResponseEntity<CollectionModel<?>> getAdminEducationDetails(String adminUuid);
     ResponseEntity<CollectionModel<?>> getAdminEmploymentDetails(String adminUuid);
     ResponseEntity<CollectionModel<?>> getAdminSkillDetails(String adminUuid);
 }

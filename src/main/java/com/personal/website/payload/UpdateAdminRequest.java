@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Builder
 @Data
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class UpdateAdminRequest
     private String lastName;
     private String email;
     private String firstName;
+    private String sex;
+    private LocalDate dateOfBirth;
 }
