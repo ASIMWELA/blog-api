@@ -24,7 +24,7 @@ public class BotUpdateController {
     public BotChatEntity sendMessageToAdmin(@NonNull @RequestBody BotMessage botMessage){
         return  botService.sendMessage(botMessage);
     }
-    @GetMapping( consumes = "application/json", produces = "application/json")
+    @GetMapping( produces = "application/json")
     public ResponseEntity<List<BotChatEntity>> getBotChatMessages(){
         return  botService.getBotMessages();
     }

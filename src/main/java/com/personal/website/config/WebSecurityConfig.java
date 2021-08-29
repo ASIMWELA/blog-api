@@ -29,8 +29,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter
-{
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -38,20 +37,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Bean
-    public JwtTokenFilter authenticationJwtTokenFilter()
-    {
+    public JwtTokenFilter authenticationJwtTokenFilter() {
         return new JwtTokenFilter();
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception
-    {
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource()
-    {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
@@ -64,58 +60,55 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception
-    {
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception
-    {
+    protected void configure(HttpSecurity http) throws Exception {
         //TODO: filter the endpoints accodingly
         http.cors()
-            .and().csrf().disable()
+                .and().csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler)
-            .and()
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+                .and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST,
-             "/api/v1/auth/login",
+                .antMatchers(HttpMethod.POST,
+                        "/api/v1/auth/login",
                         "/api/v1/bots",
                         "/api/v1/users/subscribers",
                         "/api/v1/auth/forgot-password",
                         "/api/v1/auth/reset-password",
-                            "/api/v1/sendEmail"
-                            )
-                            .permitAll()
-                    .antMatchers(HttpMethod.GET,
+                        "/api/v1/sendEmail"
+                )
+                .permitAll()
+                .antMatchers(HttpMethod.GET,
                         "/api/v1/resources",
-                                    "/api/v1/users/**",
-                            "/api/v1/bots",
-                            "/api/v1/users/{userUuid}/experience",
-                                    "/api/v1/projects",
-                                    "/api/v1/projects/**",
-                            "/api/v1/resources")
-                             .permitAll()
+                        "/api/v1/users/**",
+                        "/api/v1/bots",
+                        "/api/v1/users/{userUuid}/experience",
+                        "/api/v1/projects",
+                        "/api/v1/projects/**",
+                        "/api/v1/resources")
+                .permitAll()
                 .antMatchers("/",
-                            "/favicon.ico",
-                            "/**/*.png",
-                            "/**/*.gif",
-                            "/**/*.svg",
-                            "/**/*.jpg",
-                            "/**/*.html",
-                            "/**/*.css",
-                            "/**/*.js")
-                                .permitAll()
+                        "/favicon.ico",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js")
+                .permitAll()
                 .antMatchers("/app/**",
                         "/queue/**",
                         "/user/**",
