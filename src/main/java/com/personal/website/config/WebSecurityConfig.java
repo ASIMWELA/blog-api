@@ -78,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
+        //TODO: filter the endpoints accodingly
         http.cors()
             .and().csrf().disable()
                 .exceptionHandling()
